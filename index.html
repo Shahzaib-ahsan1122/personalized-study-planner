@@ -1,0 +1,110 @@
+<!-- HTML -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Sprint Planner</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Link to separated custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <div id="app" class="container mx-auto p-4 md:p-8">
+
+        <!-- Header and Budget Status -->
+        <header class="text-center mb-8 bg-indigo-600 text-white p-6 rounded-xl shadow-lg">
+            <h1 class="text-3xl font-extrabold tracking-tight md:text-4xl">Hackathon Sprint Planner</h1>
+            <p class="mt-2 text-indigo-200">Total Budget: 10.0 hours. Prioritize ruthlessly!</p>
+            <div id="budget-status" class="mt-4 text-xl font-bold bg-white text-indigo-800 p-2 rounded-lg inline-block shadow-md">
+                Remaining Budget: <span id="remaining-budget" class="text-green-600">--</span> hours
+            </div>
+            <div id="effort-remaining" class="mt-2 text-sm text-indigo-300">
+                Estimated Open Effort: -- hours
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- 1. Add Task Form (Left Column) -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-xl h-fit">
+                <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Add New Task</h2>
+                <form id="add-task-form" class="space-y-4">
+                    <div>
+                        <label for="task-name" class="block text-sm font-medium text-gray-700">Task Name</label>
+                        <input type="text" id="task-name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="task-component" class="block text-sm font-medium text-gray-700">Component/Area</label>
+                        <input type="text" id="task-component" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="task-effort" class="block text-sm font-medium text-gray-700">Estimated Effort (Hours, e.g., 0.5)</label>
+                        <input type="number" id="task-effort" min="0.1" step="0.1" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="task-importance" class="block text-sm font-medium text-gray-700">Importance (1 = Low, 10 = Critical)</label>
+                        <input type="number" id="task-importance" min="1" max="10" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150">
+                        Add Task to Sprint
+                    </button>
+                </form>
+            </div>
+
+            <!-- 2. Prioritized Schedule (Center Column) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-xl">
+                <h2 class="text-2xl font-semibold mb-4 text-indigo-700">Prioritized Schedule</h2>
+                <div id="schedule-list" class="space-y-3 task-scroll-area max-h-[60vh] overflow-y-auto pr-2">
+                    <!-- Tasks will be injected here by script.js -->
+                    <p id="no-tasks-message" class="text-gray-500 text-center py-8">No tasks defined yet. Add a task to see your priority list!</p>
+                </div>
+            </div>
+            
+            <!-- 3. Statistics and Accuracy (Bottom/Right Area) -->
+            <div class="lg:col-span-3">
+                <div id="stats-area" class="bg-indigo-50 p-6 rounded-xl shadow-xl">
+                    <h2 class="text-2xl font-semibold mb-4 text-indigo-700 border-b pb-2">Sprint Statistics</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="p-3 bg-white rounded-lg shadow-md">
+                            <p class="text-sm text-gray-500">Completed Tasks</p>
+                            <p id="stat-completed" class="text-2xl font-bold text-indigo-600">0</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg shadow-md">
+                            <p class="text-sm text-gray-500">Actual Time Spent</p>
+                            <p id="stat-actual-time" class="text-2xl font-bold text-indigo-600">0.0h</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg shadow-md">
+                            <p class="text-sm text-gray-500">Estimation Variance</p>
+                            <p id="stat-variance" class="text-2xl font-bold text-red-500">0.0h</p>
+                            <p id="variance-tip" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Modal for marking complete -->
+        <div id="complete-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full">
+                <h3 class="text-xl font-semibold mb-4 text-indigo-700">Log Completion Time</h3>
+                <p class="mb-4 text-gray-700">How many hours did you **actually** spend on "<span id="modal-task-name" class="font-bold"></span>"?</p>
+                <div class="mb-4 text-sm text-gray-500">Estimated: <span id="modal-task-effort"></span> hours</div>
+                <input type="number" id="actual-time-input" min="0.1" step="0.1" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button id="cancel-completion" class="py-2 px-4 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        Cancel
+                    </button>
+                    <button id="confirm-completion" class="py-2 px-4 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
+                        Confirm & Complete
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Links to the external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>

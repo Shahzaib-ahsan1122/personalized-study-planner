@@ -1,0 +1,12 @@
+/*css
+/* Custom scrollbar styles for the prioritized task list (schedule-list) */
+.task-scroll-area::-webkit-scrollbar {
+    width: 8px;
+}
+.task-scroll-area::-webkit-scrollbar-thumb {
+    background-color: #9ca3af; /* A medium gray for the scroll handle */
+    border-radius: 4px;
+}
+.task-scroll-area::-webkit-scrollbar-track {
+    background-color: #f3f4f6; /* A very light gray for the scroll track */
+}
