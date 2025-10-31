@@ -18,7 +18,7 @@ async function fetchTasks() {
         
         tasks = await response.json();
         renderSchedule();
-    } catch (error) {
+    } catch (error) { 
         console.error("Error communicating with Python Backend:", error);
         // Display a user-friendly message if the backend is down
         document.getElementById('schedule-list').innerHTML = `
@@ -297,3 +297,16 @@ function showCompleteModal(e) {
         document.getElementById('complete-modal').classList.add('flex');
     }
 }
+
+function createEvevnt() {
+    const button = document.querySelector('#button')
+    console.log(button);
+    
+    button.addEventListener('click', () => {
+        console.log('asdfasd');
+        
+        
+    })
+}
+
+createEvevnt()
